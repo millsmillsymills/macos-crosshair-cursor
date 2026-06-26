@@ -1,0 +1,3 @@
+# Native Swift + AppKit, built with SwiftPM (no Xcode project)
+
+We build the app as a Swift Package Manager executable target compiled against the CommandLineTools SDK, and assemble the `.app` bundle with a hand-written `build.sh`, rather than maintaining an `.xcodeproj`. Verified that AppKit, SwiftUI, Carbon, and ServiceManagement are all present in the CLT SDK, so no full Xcode install is required. We chose this so the project stays as inspectable, git-friendly text and matches the available toolchain; the cost is losing Xcode's GUI signing/Interface Builder conveniences, which we replace with a small script. SwiftUI is used only inside the Preferences window via `NSHostingController`; the app lifecycle is AppKit (`NSApplication` + `AppDelegate`, `LSUIElement`).
