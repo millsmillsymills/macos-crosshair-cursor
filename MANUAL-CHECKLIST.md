@@ -98,7 +98,7 @@ and are out of scope here.
 ## Config clamping (end-to-end)
 
 - [ ] Corrupt or clear the stored settings
-      (`defaults delete com.mills.crosshair`), relaunch, and confirm the app comes
+      (`defaults delete com.millsymills.crosshair`), relaunch, and confirm the app comes
       up with clamped defaults (red, 60% opacity, 1 pt) rather than crashing.
 - [ ] In Preferences, the Opacity slider is bounded to 0–100 and the Thickness
       stepper to its minimum of 1 pt.

@@ -99,7 +99,7 @@ extension UserDefaults: SettingsStore {
 }
 
 extension Settings {
-    public static let storageKey = "com.mills.crosshair.settings"
+    public static let storageKey = "com.millsymills.crosshair.settings"
 
     /// Loads settings, falling back to the clamped `default` on missing or
     /// corrupt data. Decoded values are clamped via `init(from:)`.

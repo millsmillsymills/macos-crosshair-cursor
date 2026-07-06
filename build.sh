@@ -6,7 +6,7 @@ set -euo pipefail
 # source of truth for LSUIElement (Dock-less) behavior when run as an .app.
 
 readonly APP_NAME="Crosshair"
-readonly BUNDLE_ID="com.mills.crosshair"
+readonly BUNDLE_ID="com.millsymills.crosshair"
 readonly EXECUTABLE="CrosshairApp"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
