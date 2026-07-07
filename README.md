@@ -54,3 +54,7 @@ instead.
 - [CONTEXT.md](./CONTEXT.md) — domain language
 - [PLAN.md](./PLAN.md) — design decisions and architecture
 - [docs/adr/](./docs/adr/) — architecture decision records
+
+## License
+
+[MIT](./LICENSE)
