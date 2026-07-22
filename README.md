@@ -15,7 +15,8 @@ tracking uses a plain global `NSEvent` monitor, not an event tap.
 - Crosshair spanning all connected displays, tracking the cursor live
 - Toggle via the menu-bar item or the global hotkey ⌥⌘X
 - Adjustable color, opacity, and thickness (default: red, 60%, 1 pt)
-- Click-through overlay that joins all Spaces and stays below the menu bar
+- Click-through overlay that joins all Spaces — including other apps'
+  full-screen Spaces — and stays below the menu bar
 - Optional launch at login
 - Handles display hot-plug and rearrangement
 
@@ -52,6 +53,7 @@ instead.
 ## Documentation
 
 - [CONTEXT.md](./CONTEXT.md) — domain language
+- [docs/LOGGING.md](./docs/LOGGING.md) — logging and error-handling standards
 - [PLAN.md](./PLAN.md) — design decisions and architecture
 - [docs/adr/](./docs/adr/) — architecture decision records
 

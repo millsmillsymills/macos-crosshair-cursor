@@ -69,13 +69,25 @@ and are out of scope here.
 - [ ] On a single-display Mac, confirm normal tracking with no special-casing and
       no crash.
 
+## Screen wake
+
+- [ ] Sleep the displays (Control-Shift-Eject or idle timeout), wake them, and
+      confirm the Crosshair is intact on every display. The unified log shows a
+      `screens woke; scheduling rebuild` line
+      (`log show --predicate 'subsystem == "com.millsymills.crosshair"'`).
+
+## Tracking while Crosshair is frontmost
+
+- [ ] Open Preferences and move the mouse over and around the Preferences
+      window. The Crosshair keeps tracking (local `NSEvent` monitor covers
+      events the global monitor skips when Crosshair is frontmost).
+
 ## Spaces
 
 - [ ] Switch to another Space (Mission Control / swipe). The Crosshair is present
       on the new Space too (`canJoinAllSpaces` + `.stationary`).
-- [ ] Open a full-screen Space for another app. The Crosshair is expected NOT to
-      appear over that app's full-screen Space (explicitly out of scope, PLAN
-      "Deferred") — confirm this is the only place it is absent.
+- [ ] Open a full-screen Space for another app. The Crosshair appears over that
+      app's full-screen Space too (`.fullScreenAuxiliary`).
 
 ## Launch at login
 

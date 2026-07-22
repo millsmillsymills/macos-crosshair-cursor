@@ -71,7 +71,13 @@ final class SettingsModel: ObservableObject {
     private func commit() {
         guard !isReverting else { return }
         let settings = makeSettings()
-        settings.save(to: store)
+        do {
+            try settings.save(to: store)
+        } catch {
+            Log.settings.error(
+                "settings not persisted; change won't survive relaunch: \(error, privacy: .public)"
+            )
+        }
         onChange(settings)
     }
 
@@ -81,7 +87,10 @@ final class SettingsModel: ObservableObject {
             try loginItem.setEnabled(launchAtLogin)
             commit()
         } catch {
-            NSLog("Crosshair: launch-at-login update failed: \(error.localizedDescription)")
+            let enabled = launchAtLogin
+            Log.settings.error(
+                "launch-at-login=\(enabled) failed; reverting: \(error, privacy: .public)"
+            )
             isReverting = true
             launchAtLogin = oldValue
             isReverting = false

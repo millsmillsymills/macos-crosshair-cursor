@@ -14,7 +14,7 @@ language and [docs/adr/](./docs/adr/) for the load-bearing decisions.
 | 3 | Overlay architecture | One Overlay Window per `NSScreen` — ADR-0002 |
 | 4 | Tracking | Global `NSEvent` monitor on mouse-moved + dragged, permission-free — ADR-0003 |
 | 5 | Hotkey | Carbon `RegisterEventHotKey`, fixed default ⌥⌘X, hand-rolled — ADR-0003 |
-| 6 | Elevation | Float above normal windows, join all Spaces, below menu bar; not over other apps' full-screen |
+| 6 | Elevation | Float above normal windows, join all Spaces (incl. other apps' full-screen), below menu bar |
 | 7 | Appearance | Adjustable: color, opacity, thickness. Default: red, 60%, 1 pt |
 | 8 | Alignment aid | Emergent from the spanning crosshair — no dedicated feature |
 | 9 | Preferences | Small SwiftUI Preferences window via `NSHostingController`; menu = Toggle / Preferences… / Quit |
@@ -80,4 +80,3 @@ never reads `NSScreen.screens` itself, so cursor→line mapping is verifiable in
 - Live coordinate readout / grid / freeze-line alignment mode.
 - Dashed lines, center gap/dot, per-axis enable.
 - Developer ID signing + notarization for public distribution.
-- Visibility inside other apps' full-screen Spaces.
