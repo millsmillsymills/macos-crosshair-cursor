@@ -12,6 +12,7 @@ final class OverlayController {
     private var settings: Settings
     private var isVisible = true
     private var screenObserver: NSObjectProtocol?
+    private var wakeObserver: NSObjectProtocol?
     private var pendingRebuild: DispatchWorkItem?
 
     var visible: Bool { isVisible }
@@ -41,7 +42,10 @@ final class OverlayController {
 
     /// Watches for display configuration changes (dock/undock, rearrange) and
     /// debounces the burst of notifications into a single Rebuild (~100ms), per
-    /// ADR-0002. The handler runs on the main queue, so the actor hop is safe.
+    /// ADR-0002. Also logs screen wake, which reorders windows in the window
+    /// server without necessarily changing screen parameters — the prime window
+    /// for the overlay-disappears-on-one-screen glitch. Both handlers run on
+    /// the main queue, so the actor hop is safe.
     private func observeScreenChanges() {
         screenObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
@@ -50,6 +54,16 @@ final class OverlayController {
         ) { [weak self] _ in
             MainActor.assumeIsolated {
                 Log.overlay.notice("screen parameters changed; scheduling rebuild")
+                self?.scheduleRebuild()
+            }
+        }
+        wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.screensDidWakeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                Log.overlay.notice("screens woke; scheduling rebuild")
                 self?.scheduleRebuild()
             }
         }
@@ -123,6 +137,9 @@ final class OverlayController {
         pendingRebuild?.cancel()
         if let screenObserver {
             NotificationCenter.default.removeObserver(screenObserver)
+        }
+        if let wakeObserver {
+            NSWorkspace.shared.notificationCenter.removeObserver(wakeObserver)
         }
         tracker?.stop()
     }
