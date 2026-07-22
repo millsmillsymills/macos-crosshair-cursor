@@ -73,9 +73,8 @@ and are out of scope here.
 
 - [ ] Switch to another Space (Mission Control / swipe). The Crosshair is present
       on the new Space too (`canJoinAllSpaces` + `.stationary`).
-- [ ] Open a full-screen Space for another app. The Crosshair is expected NOT to
-      appear over that app's full-screen Space (explicitly out of scope, PLAN
-      "Deferred") — confirm this is the only place it is absent.
+- [ ] Open a full-screen Space for another app. The Crosshair appears over that
+      app's full-screen Space too (`.fullScreenAuxiliary`).
 
 ## Launch at login
 

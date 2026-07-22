@@ -31,7 +31,10 @@ final class OverlayWindow: NSWindow {
         // Just below the menu bar: visible over normal and floating windows but
         // never occluding the menu bar itself.
         level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.mainMenuWindow)) - 1)
-        collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        // `.canJoinAllSpaces` alone never joins full-screen Spaces;
+        // `.fullScreenAuxiliary` is what keeps the Crosshair visible when
+        // another app is full screen on this display.
+        collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
 
         contentView = crosshairView
     }
