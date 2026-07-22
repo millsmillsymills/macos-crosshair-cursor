@@ -15,7 +15,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Dock-less menu-bar agent.
         NSApp.setActivationPolicy(.accessory)
 
-        let settings = Settings.load(from: UserDefaults.standard)
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unbundled"
+        Log.app.notice("launching Crosshair \(version, privacy: .public)")
+
+        let settings = Self.loadSettings(from: UserDefaults.standard)
         let overlayController = OverlayController(settings: settings)
         self.overlayController = overlayController
         overlayController.start()
@@ -43,6 +46,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if !hotKeyManager.register() {
             statusItemController?.showHotKeyConflict()
             presentHotKeyConflictAlert()
+        }
+    }
+
+    /// Loads stored settings, falling back to defaults — loudly, so a corrupt
+    /// blob (which silently discards the user's customizations) is visible in
+    /// the unified log instead of looking like a spontaneous reset.
+    private static func loadSettings(from store: SettingsStore) -> Settings {
+        do {
+            guard let stored = try Settings.loadStored(from: store) else {
+                Log.settings.notice("no stored settings; using defaults")
+                return .default
+            }
+            return stored
+        } catch {
+            Log.settings.error(
+                "stored settings are corrupt, reverting to defaults: \(error, privacy: .public)"
+            )
+            return .default
         }
     }
 

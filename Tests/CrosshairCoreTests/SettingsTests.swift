@@ -30,7 +30,7 @@ struct SettingsTests {
     }
 
     @Test("encode/decode round-trips through a store")
-    func roundTrip() {
+    func roundTrip() throws {
         let store = InMemoryStore()
         let original = Settings(
             crosshairColor: RGBAColor(red: 0.2, green: 0.4, blue: 0.6, alpha: 1),
@@ -38,8 +38,8 @@ struct SettingsTests {
             thicknessPoints: 3,
             launchAtLogin: true
         )
-        original.save(to: store)
-        #expect(Settings.load(from: store) == original)
+        try original.save(to: store)
+        #expect(try Settings.loadStored(from: store) == original)
     }
 
     @Test("opacity clamps to 0...100 at and beyond the boundaries", arguments: [
@@ -76,16 +76,18 @@ struct SettingsTests {
         #expect(decoded.thicknessPoints == 1)
     }
 
-    @Test("missing stored data falls back to defaults")
-    func missingDataFallsBack() {
-        #expect(Settings.load(from: InMemoryStore()) == .default)
+    @Test("missing stored data loads as nil")
+    func missingDataLoadsNil() throws {
+        #expect(try Settings.loadStored(from: InMemoryStore()) == nil)
     }
 
-    @Test("corrupt stored data falls back to defaults")
-    func corruptDataFallsBack() {
+    @Test("corrupt stored data throws instead of silently succeeding")
+    func corruptDataThrows() {
         let store = InMemoryStore()
         store.writeRaw(Data("not json".utf8), forKey: Settings.storageKey)
-        #expect(Settings.load(from: store) == .default)
+        #expect(throws: DecodingError.self) {
+            try Settings.loadStored(from: store)
+        }
     }
 
     @Test("color components clamp into 0...1")

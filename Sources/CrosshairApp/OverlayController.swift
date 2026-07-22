@@ -49,6 +49,7 @@ final class OverlayController {
             queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
+                Log.overlay.notice("screen parameters changed; scheduling rebuild")
                 self?.scheduleRebuild()
             }
         }
@@ -72,17 +73,30 @@ final class OverlayController {
         for window in overlayWindows {
             window.orderOut(nil)
         }
-        overlayWindows = NSScreen.screens.map { screen in
+        let screens = NSScreen.screens
+        overlayWindows = screens.map { screen in
             OverlayWindow(displayFrame: screen.frame, settings: settings)
         }
         applyVisibility()
         cursorMoved(to: NSEvent.mouseLocation)
+
+        let described = zip(screens, overlayWindows).map { screen, window in
+            "\(screen.localizedName) frame=\(NSStringFromRect(screen.frame)) "
+                + "scale=\(screen.backingScaleFactor) window=\(window.windowNumber)"
+        }
+        Log.overlay.notice(
+            "rebuilt \(described.count) overlay windows (visible=\(self.isVisible)): \(described.joined(separator: "; "), privacy: .public)"
+        )
+        if screens.isEmpty {
+            Log.overlay.error("no screens reported by NSScreen.screens; overlay has no windows")
+        }
     }
 
     /// Flips the Crosshair between shown and hidden and returns the new state so
     /// the caller can mirror it (e.g. the menu's checkmark).
     func toggleVisibility() -> Bool {
         isVisible.toggle()
+        Log.overlay.notice("visibility toggled to \(self.isVisible)")
         applyVisibility()
         return isVisible
     }

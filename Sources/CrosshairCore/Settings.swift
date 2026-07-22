@@ -101,16 +101,16 @@ extension UserDefaults: SettingsStore {
 extension Settings {
     public static let storageKey = "com.millsymills.crosshair.settings"
 
-    /// Loads settings, falling back to the clamped `default` on missing or
-    /// corrupt data. Decoded values are clamped via `init(from:)`.
-    public static func load(from store: SettingsStore) -> Settings {
-        guard let data = store.settingsData(forKey: storageKey),
-              let decoded = try? JSONDecoder().decode(Settings.self, from: data)
-        else { return .default }
-        return decoded
+    /// Loads the stored settings, or `nil` when nothing is stored yet. Throws
+    /// when a stored blob exists but cannot be decoded, so the caller can log
+    /// the corruption before falling back. Decoded values are clamped via
+    /// `init(from:)`.
+    public static func loadStored(from store: SettingsStore) throws -> Settings? {
+        guard let data = store.settingsData(forKey: storageKey) else { return nil }
+        return try JSONDecoder().decode(Settings.self, from: data)
     }
 
-    public func save(to store: SettingsStore) {
-        store.setSettingsData(try? JSONEncoder().encode(self), forKey: Self.storageKey)
+    public func save(to store: SettingsStore) throws {
+        store.setSettingsData(try JSONEncoder().encode(self), forKey: Self.storageKey)
     }
 }

@@ -52,6 +52,7 @@ instead.
 ## Documentation
 
 - [CONTEXT.md](./CONTEXT.md) — domain language
+- [docs/LOGGING.md](./docs/LOGGING.md) — logging and error-handling standards
 - [PLAN.md](./PLAN.md) — design decisions and architecture
 - [docs/adr/](./docs/adr/) — architecture decision records
 

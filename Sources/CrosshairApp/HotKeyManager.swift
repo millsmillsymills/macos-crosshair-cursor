@@ -47,7 +47,10 @@ final class HotKeyManager {
             Unmanaged.passUnretained(self).toOpaque(),
             &eventHandlerRef
         )
-        guard installStatus == noErr else { return false }
+        guard installStatus == noErr else {
+            Log.hotkey.error("InstallEventHandler failed: OSStatus \(installStatus)")
+            return false
+        }
 
         let hotKeyID = EventHotKeyID(signature: Self.signature, id: 1)
         let registerStatus = RegisterEventHotKey(
@@ -59,9 +62,13 @@ final class HotKeyManager {
             &hotKeyRef
         )
         guard registerStatus == noErr else {
+            Log.hotkey.error(
+                "RegisterEventHotKey(⌥⌘X) failed: OSStatus \(registerStatus) — combo likely claimed by another app"
+            )
             removeHandler()
             return false
         }
+        Log.hotkey.notice("registered global hotkey ⌥⌘X")
         return true
     }
 

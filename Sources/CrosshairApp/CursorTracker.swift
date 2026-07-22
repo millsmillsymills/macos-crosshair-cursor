@@ -29,6 +29,13 @@ final class CursorTracker {
                 onMove(NSEvent.mouseLocation)
             }
         }
+        if globalMonitor == nil {
+            Log.tracking.error(
+                "global mouse monitor failed to install; the crosshair will not follow the cursor"
+            )
+        } else {
+            Log.tracking.notice("global mouse monitor installed")
+        }
     }
 
     func stop() {
