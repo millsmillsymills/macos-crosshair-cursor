@@ -10,7 +10,7 @@ log gives retention, levels, and offline collection for free.
 | Category   | Covers |
 |------------|--------|
 | `app`      | Launch, activation policy, app-level lifecycle |
-| `overlay`  | Overlay window set: rebuilds, screen parameter changes, screen wake, visibility toggles, window numbers |
+| `overlay`  | Overlay window set: rebuilds, screen changes and wake, visibility, window numbers |
 | `tracking` | The global mouse-event monitor lifecycle |
 | `settings` | Settings load/save, launch-at-login registration |
 | `hotkey`   | Carbon hotkey handler install/registration |
@@ -40,8 +40,9 @@ numbers, error descriptions). Exported logs otherwise redact them to
   or `nil` returns and the app layer decides how to log and recover. This keeps
   Core pure and testable.
 - Degraded modes must be observable: if a feature is disabled at runtime
-  (hotkey conflict, failed event monitor), log at error level and surface it in
-  the UI when the user would otherwise wonder why nothing happens.
+  (hotkey conflict, failed event monitor), log at error level. Add a UI
+  surface when the user would otherwise wonder why nothing happens — the
+  hotkey conflict does this with a menu note and an alert.
 
 ## Collecting logs
 

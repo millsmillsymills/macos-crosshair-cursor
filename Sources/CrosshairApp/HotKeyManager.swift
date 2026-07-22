@@ -63,7 +63,7 @@ final class HotKeyManager {
         )
         guard registerStatus == noErr else {
             Log.hotkey.error(
-                "RegisterEventHotKey(⌥⌘X) failed: OSStatus \(registerStatus) — combo likely claimed by another app"
+                "RegisterEventHotKey(⌥⌘X) failed (likely claimed): OSStatus \(registerStatus)"
             )
             removeHandler()
             return false

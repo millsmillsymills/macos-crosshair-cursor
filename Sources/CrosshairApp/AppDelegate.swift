@@ -15,7 +15,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Dock-less menu-bar agent.
         NSApp.setActivationPolicy(.accessory)
 
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unbundled"
+        let version = Bundle.main
+            .infoDictionary?["CFBundleShortVersionString"] as? String ?? "unbundled"
         Log.app.notice("launching Crosshair \(version, privacy: .public)")
 
         let settings = Self.loadSettings(from: UserDefaults.standard)

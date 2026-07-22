@@ -75,7 +75,7 @@ final class SettingsModel: ObservableObject {
             try settings.save(to: store)
         } catch {
             Log.settings.error(
-                "failed to persist settings; the change applies now but will not survive relaunch: \(error, privacy: .public)"
+                "settings not persisted; change won't survive relaunch: \(error, privacy: .public)"
             )
         }
         onChange(settings)
@@ -87,8 +87,9 @@ final class SettingsModel: ObservableObject {
             try loginItem.setEnabled(launchAtLogin)
             commit()
         } catch {
+            let enabled = launchAtLogin
             Log.settings.error(
-                "launch-at-login update to \(self.launchAtLogin) failed, reverting toggle: \(error, privacy: .public)"
+                "launch-at-login=\(enabled) failed; reverting: \(error, privacy: .public)"
             )
             isReverting = true
             launchAtLogin = oldValue

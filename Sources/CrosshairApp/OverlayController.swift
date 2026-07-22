@@ -98,8 +98,10 @@ final class OverlayController {
             "\(screen.localizedName) frame=\(NSStringFromRect(screen.frame)) "
                 + "scale=\(screen.backingScaleFactor) window=\(window.windowNumber)"
         }
+        let summary = described.joined(separator: "; ")
+        let visible = isVisible
         Log.overlay.notice(
-            "rebuilt \(described.count) overlay windows (visible=\(self.isVisible)): \(described.joined(separator: "; "), privacy: .public)"
+            "rebuilt \(described.count) windows visible=\(visible): \(summary, privacy: .public)"
         )
         if screens.isEmpty {
             Log.overlay.error("no screens reported by NSScreen.screens; overlay has no windows")
