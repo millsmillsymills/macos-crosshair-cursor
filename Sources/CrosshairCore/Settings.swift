@@ -28,7 +28,8 @@ public struct RGBAColor: Codable, Equatable, Sendable {
     public static let red = RGBAColor(red: 1, green: 0, blue: 0, alpha: 1)
 
     private static func clampUnit(_ value: Double) -> Double {
-        min(max(value, 0), 1)
+        guard value.isFinite else { return value == .infinity ? 1 : 0 }
+        return min(max(value, 0), 1)
     }
 }
 
