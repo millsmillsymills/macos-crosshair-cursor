@@ -22,15 +22,20 @@ final class OverlayController {
         self.settings = settings
     }
 
-    func start() {
+    /// Builds the window set and starts Tracking. Returns whether the mouse
+    /// monitors installed, so the app can surface a frozen-crosshair degraded
+    /// mode; the overlay itself still comes up either way.
+    @discardableResult
+    func start() -> Bool {
         rebuild()
         let tracker = CursorTracker { [weak self] point in
             self?.cursorMoved(to: point)
         }
-        tracker.start()
+        let trackingInstalled = tracker.start()
         self.tracker = tracker
         observeScreenChanges()
         startResyncTimer()
+        return trackingInstalled
     }
 
     /// Live-applies new appearance Settings to every Crosshair and remembers them
