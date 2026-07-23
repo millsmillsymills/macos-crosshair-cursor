@@ -98,4 +98,26 @@ struct SettingsTests {
         #expect(color.blue == 0.5)
         #expect(color.alpha == 1)
     }
+
+    @Test("non-finite color components clamp to finite values: NaN and -inf to 0, +inf to 1")
+    func colorNonFiniteClamping() {
+        let color = RGBAColor(red: .nan, green: -.infinity, blue: .infinity, alpha: .nan)
+        #expect(color.red == 0)
+        #expect(color.green == 0)
+        #expect(color.blue == 1)
+        #expect(color.alpha == 0)
+    }
+
+    @Test("settings built from non-finite color components round-trip through a store")
+    func nonFiniteColorRoundTrips() throws {
+        let store = InMemoryStore()
+        let settings = Settings(
+            crosshairColor: RGBAColor(red: .nan, green: .infinity, blue: -.infinity, alpha: .nan),
+            opacityPercent: 60,
+            thicknessPoints: 1,
+            launchAtLogin: false
+        )
+        try settings.save(to: store)
+        #expect(try Settings.loadStored(from: store) == settings)
+    }
 }
