@@ -36,6 +36,7 @@ final class SettingsModel: ObservableObject {
     @Published var opacityPercent: Double { didSet { commit() } }
     @Published var thicknessPoints: Double { didSet { commit() } }
     @Published var launchAtLogin: Bool { didSet { applyLaunchAtLogin(oldValue: oldValue) } }
+    @Published private(set) var launchAtLoginNote: String?
 
     let hotKeyLabel = "⌥⌘X"
 
@@ -85,12 +86,18 @@ final class SettingsModel: ObservableObject {
         guard !isReverting else { return }
         do {
             try loginItem.setEnabled(launchAtLogin)
+            launchAtLoginNote = nil
             commit()
         } catch {
             let enabled = launchAtLogin
             Log.settings.error(
                 "launch-at-login=\(enabled) failed; reverting: \(error, privacy: .public)"
             )
+            launchAtLoginNote = enabled
+                ? "macOS blocked this change. Approve Crosshair under System Settings "
+                    + "> General > Login Items, then try again."
+                : "macOS couldn't remove Crosshair from Login Items. Remove it under "
+                    + "System Settings > General > Login Items."
             isReverting = true
             launchAtLogin = oldValue
             isReverting = false

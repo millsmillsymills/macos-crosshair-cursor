@@ -25,6 +25,12 @@ struct PreferencesView: View {
             LabeledContent("Toggle Hotkey", value: model.hotKeyLabel)
 
             Toggle("Launch at login", isOn: $model.launchAtLogin)
+
+            if let note = model.launchAtLoginNote {
+                Text(note)
+                    .font(.callout)
+                    .foregroundStyle(.red)
+            }
         }
         .padding(20)
         .frame(width: 320)

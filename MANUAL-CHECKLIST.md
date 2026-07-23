@@ -98,6 +98,10 @@ and are out of scope here.
 - [ ] Note: registration only succeeds from a properly bundled, signed
       `Crosshair.app` (via `build.sh`), not a bare `swift run`. If registration
       fails, the toggle reverts itself and the failure is logged — no crash.
+- [ ] Force a registration failure (easiest: toggle "Launch at login" from a
+      bare `swift run`, which cannot register). The toggle reverts and a red
+      note appears under it pointing to System Settings > General > Login
+      Items. A later successful toggle clears the note.
 
 ## Hotkey-conflict alert
 
