@@ -60,7 +60,8 @@ final class OverlayController {
             queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated {
-                Log.overlay.notice("screen parameters changed; scheduling rebuild")
+                // No per-notification log: dock/undock posts a burst of these
+                // and rebuild() already logs once per coalesced rebuild.
                 self?.scheduleRebuild()
             }
         }
@@ -105,15 +106,28 @@ final class OverlayController {
         resyncTimer = timer
     }
 
+    /// Auto-corrected divergences log at notice, not error: the net exists to
+    /// recover, and the recovery itself is the postmortem-worthy transition.
     private func resyncIfScreensDiverged() {
         guard pendingRebuild == nil else { return }
         let current = NSScreen.screens.map(\.frame)
         let built = overlayWindows.map(\.displayFrame)
-        guard current != built else { return }
-        Log.overlay.error(
-            "overlay windows diverged from screens (missed reconfiguration); rebuilding"
-        )
-        rebuild()
+        if !ScreenTopology.matches(current, built) {
+            Log.overlay.notice(
+                "overlay windows diverged from screens (missed reconfiguration); rebuilding"
+            )
+            rebuild()
+            return
+        }
+        // Frames matching is not enough: the disappearance mode this net was
+        // built for includes the window server dropping an overlay window while
+        // the screen topology stays identical.
+        if isVisible && overlayWindows.contains(where: { !$0.isVisible || $0.windowNumber <= 0 }) {
+            Log.overlay.notice(
+                "overlay window vanished while it should be visible; rebuilding"
+            )
+            rebuild()
+        }
     }
 
     /// Tears down and recreates the full Overlay Window set from the current
