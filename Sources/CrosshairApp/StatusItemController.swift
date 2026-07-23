@@ -11,6 +11,7 @@ final class StatusItemController {
     private let onToggle: @MainActor () -> Void
     private let onOpenPreferences: @MainActor () -> Void
     private var hotKeyConflictItem: NSMenuItem?
+    private var trackingFailureItem: NSMenuItem?
 
     init(
         visible: Bool,
@@ -44,15 +45,23 @@ final class StatusItemController {
     /// Adds a disabled note to the menu when ⌥⌘X could not be registered, so the
     /// user can see why the hotkey does nothing. The menu toggle is unaffected.
     func showHotKeyConflict() {
-        guard hotKeyConflictItem == nil, let menu = statusItem.menu else { return }
-        let note = NSMenuItem(
-            title: "Hotkey ⌥⌘X unavailable (in use by another app)",
-            action: nil,
-            keyEquivalent: ""
-        )
+        guard hotKeyConflictItem == nil else { return }
+        hotKeyConflictItem = insertDegradedNote("Hotkey ⌥⌘X unavailable (in use by another app)")
+    }
+
+    /// Adds a disabled note to the menu when the mouse monitors failed to
+    /// install, so a frozen crosshair is explained where the user will look.
+    func showTrackingFailure() {
+        guard trackingFailureItem == nil else { return }
+        trackingFailureItem = insertDegradedNote("Cursor tracking unavailable (monitor failed)")
+    }
+
+    private func insertDegradedNote(_ title: String) -> NSMenuItem? {
+        guard let menu = statusItem.menu else { return nil }
+        let note = NSMenuItem(title: title, action: nil, keyEquivalent: "")
         note.isEnabled = false
         menu.insertItem(note, at: menu.index(of: toggleItem) + 1)
-        hotKeyConflictItem = note
+        return note
     }
 
     private func makeMenu() -> NSMenu {

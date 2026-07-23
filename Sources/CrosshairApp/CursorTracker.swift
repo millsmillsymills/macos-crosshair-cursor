@@ -19,8 +19,14 @@ final class CursorTracker {
         self.onMove = onMove
     }
 
-    func start() {
-        guard globalMonitor == nil else { return }
+    /// Installs the monitors and reports whether both went in, so the caller
+    /// can surface the degraded mode instead of leaving the crosshair frozen
+    /// with only a log line. Calling again tears down whatever is installed
+    /// first — a nil-guard on just one monitor let a second call leak the
+    /// other monitor and double every `onMove` delivery.
+    @discardableResult
+    func start() -> Bool {
+        stop()
         let mask: NSEvent.EventTypeMask = [
             .mouseMoved,
             .leftMouseDragged,
@@ -47,6 +53,7 @@ final class CursorTracker {
         } else {
             Log.tracking.notice("global and local mouse monitors installed")
         }
+        return globalInstalled && localInstalled
     }
 
     func stop() {

@@ -22,7 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let settings = Self.loadSettings(from: UserDefaults.standard)
         let overlayController = OverlayController(settings: settings)
         self.overlayController = overlayController
-        overlayController.start()
+        let trackingInstalled = overlayController.start()
 
         let settingsModel = SettingsModel(
             settings: settings,
@@ -47,6 +47,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if !hotKeyManager.register() {
             statusItemController?.showHotKeyConflict()
             presentHotKeyConflictAlert()
+        }
+
+        if !trackingInstalled {
+            statusItemController?.showTrackingFailure()
+            presentTrackingFailureAlert()
         }
     }
 
@@ -84,6 +89,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Another app is already using ⌥⌘X, so the global toggle hotkey is \
             disabled. You can still show or hide the Crosshair from the menu-bar \
             icon.
+            """
+        alert.addButton(withTitle: "OK")
+        NSApp.activate(ignoringOtherApps: true)
+        alert.runModal()
+    }
+
+    /// Non-fatal heads-up that the mouse monitors failed to install, so the
+    /// crosshair will not follow the cursor. Without this the only trace is a
+    /// log line and the crosshair just looks frozen.
+    private func presentTrackingFailureAlert() {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Crosshair can't track the cursor"
+        alert.informativeText = """
+            The mouse monitor failed to start, so the crosshair won't follow \
+            the cursor. Try quitting and relaunching Crosshair.
             """
         alert.addButton(withTitle: "OK")
         NSApp.activate(ignoringOtherApps: true)
