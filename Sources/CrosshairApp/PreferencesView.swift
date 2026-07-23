@@ -31,6 +31,12 @@ struct PreferencesView: View {
                     .font(.callout)
                     .foregroundStyle(.red)
             }
+
+            if model.saveFailed {
+                Text("Couldn't save your settings — changes apply now but will be lost when Crosshair quits.")
+                    .font(.callout)
+                    .foregroundStyle(.red)
+            }
         }
         .padding(20)
         .frame(width: 320)

@@ -77,7 +77,10 @@ public struct Settings: Codable, Equatable, Sendable {
     }
 
     private static func clampThickness(_ value: Double) -> Double {
-        max(value, minThicknessPoints)
+        // max(NaN, 1) returns NaN, and JSONEncoder rejects non-finite Doubles,
+        // so a non-finite value here would make Settings permanently unsaveable.
+        guard value.isFinite else { return minThicknessPoints }
+        return max(value, minThicknessPoints)
     }
 }
 

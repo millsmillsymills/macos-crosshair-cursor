@@ -37,6 +37,7 @@ final class SettingsModel: ObservableObject {
     @Published var thicknessPoints: Double { didSet { commit() } }
     @Published var launchAtLogin: Bool { didSet { applyLaunchAtLogin(oldValue: oldValue) } }
     @Published private(set) var launchAtLoginNote: String?
+    @Published private(set) var saveFailed = false
 
     let hotKeyLabel = "⌥⌘X"
 
@@ -74,10 +75,12 @@ final class SettingsModel: ObservableObject {
         let settings = makeSettings()
         do {
             try settings.save(to: store)
+            saveFailed = false
         } catch {
             Log.settings.error(
                 "settings not persisted; change won't survive relaunch: \(error, privacy: .public)"
             )
+            saveFailed = true
         }
         onChange(settings)
     }
