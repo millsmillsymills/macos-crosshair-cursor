@@ -26,6 +26,12 @@ struct PreferencesView: View {
 
             Toggle("Launch at login", isOn: $model.launchAtLogin)
 
+            if let note = model.launchAtLoginNote {
+                Text(note)
+                    .font(.callout)
+                    .foregroundStyle(.red)
+            }
+
             if model.saveFailed {
                 Text("Couldn't save your settings — changes apply now but will be lost when Crosshair quits.")
                     .font(.callout)
