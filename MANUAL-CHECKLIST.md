@@ -112,5 +112,11 @@ and are out of scope here.
 - [ ] Corrupt or clear the stored settings
       (`defaults delete com.millsymills.crosshair`), relaunch, and confirm the app comes
       up with clamped defaults (red, 60% opacity, 1 pt) rather than crashing.
+- [ ] Write garbage into the stored settings
+      (`defaults write com.millsymills.crosshair com.millsymills.crosshair.settings -data 6e6f74206a736f6e`),
+      relaunch, and confirm the corrupt blob was copied to the
+      `com.millsymills.crosshair.settings.corrupt` key
+      (`defaults read com.millsymills.crosshair`) and the unified log reports the
+      backup with its byte count. Change a preference; the backup key survives.
 - [ ] In Preferences, the Opacity slider is bounded to 0–100 and the Thickness
       stepper to its minimum of 1 pt.

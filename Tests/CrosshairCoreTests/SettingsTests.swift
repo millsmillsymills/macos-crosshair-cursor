@@ -90,6 +90,44 @@ struct SettingsTests {
         }
     }
 
+    @Test("backing up a corrupt blob copies it intact and reports its size")
+    func corruptBlobBackup() {
+        let store = InMemoryStore()
+        let corrupt = Data("not json".utf8)
+        store.writeRaw(corrupt, forKey: Settings.storageKey)
+
+        #expect(Settings.backUpStoredBlob(in: store) == corrupt.count)
+        #expect(store.settingsData(forKey: Settings.corruptBackupKey) == corrupt)
+    }
+
+    @Test("a later save overwrites the main key but not the backup")
+    func backupSurvivesLaterSaves() throws {
+        let store = InMemoryStore()
+        let corrupt = Data("not json".utf8)
+        store.writeRaw(corrupt, forKey: Settings.storageKey)
+        _ = Settings.backUpStoredBlob(in: store)
+
+        try Settings.default.save(to: store)
+
+        #expect(store.settingsData(forKey: Settings.corruptBackupKey) == corrupt)
+        #expect(try Settings.loadStored(from: store) == Settings.default)
+    }
+
+    @Test("backing up with nothing stored returns nil and writes no backup")
+    func backupWithNothingStored() {
+        let store = InMemoryStore()
+        #expect(Settings.backUpStoredBlob(in: store) == nil)
+        #expect(store.settingsData(forKey: Settings.corruptBackupKey) == nil)
+    }
+
+    @Test("a backup does not affect loading the main key")
+    func backupDoesNotAffectLoad() throws {
+        let store = InMemoryStore()
+        store.writeRaw(Data("not json".utf8), forKey: Settings.corruptBackupKey)
+        try Settings.default.save(to: store)
+        #expect(try Settings.loadStored(from: store) == Settings.default)
+    }
+
     @Test("color components clamp into 0...1")
     func colorClamping() {
         let color = RGBAColor(red: 2, green: -1, blue: 0.5, alpha: 9)
