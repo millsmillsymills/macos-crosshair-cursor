@@ -103,6 +103,19 @@ extension UserDefaults: SettingsStore {
 
 extension Settings {
     public static let storageKey = "com.millsymills.crosshair.settings"
+    public static let corruptBackupKey = storageKey + ".corrupt"
+
+    /// Copies whatever blob sits under `storageKey` to `corruptBackupKey` and
+    /// returns its byte count, or `nil` when nothing is stored. Call before
+    /// falling back to defaults after a decode failure: the first Preferences
+    /// edit overwrites the main key, and without a backup the user's
+    /// customizations and the diagnostic evidence are unrecoverable. A single
+    /// backup slot is kept; repeated corruption overwrites it.
+    public static func backUpStoredBlob(in store: SettingsStore) -> Int? {
+        guard let data = store.settingsData(forKey: storageKey) else { return nil }
+        store.setSettingsData(data, forKey: corruptBackupKey)
+        return data.count
+    }
 
     /// Loads the stored settings, or `nil` when nothing is stored yet. Throws
     /// when a stored blob exists but cannot be decoded, so the caller can log

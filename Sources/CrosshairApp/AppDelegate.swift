@@ -57,7 +57,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Loads stored settings, falling back to defaults — loudly, so a corrupt
     /// blob (which silently discards the user's customizations) is visible in
-    /// the unified log instead of looking like a spontaneous reset.
+    /// the unified log instead of looking like a spontaneous reset. The corrupt
+    /// blob is preserved under a backup key first; otherwise the next
+    /// Preferences edit would overwrite the only copy.
     private static func loadSettings(from store: SettingsStore) -> Settings {
         do {
             guard let stored = try Settings.loadStored(from: store) else {
@@ -66,8 +68,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
             return stored
         } catch {
+            let backedUpBytes = Settings.backUpStoredBlob(in: store) ?? 0
             Log.settings.error(
-                "stored settings are corrupt, reverting to defaults: \(error, privacy: .public)"
+                """
+                stored settings are corrupt, reverting to defaults; backed up \
+                \(backedUpBytes) bytes to \(Settings.corruptBackupKey, privacy: .public): \
+                \(error, privacy: .public)
+                """
             )
             return .default
         }
