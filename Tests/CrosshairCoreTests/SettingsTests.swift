@@ -65,6 +65,32 @@ struct SettingsTests {
                          thicknessPoints: 4.5, launchAtLogin: false).thicknessPoints == 4.5)
     }
 
+    @Test("non-finite thickness clamps to the minimum", arguments: [
+        Double.nan, .infinity, -.infinity,
+    ])
+    func nonFiniteThicknessClamping(input: Double) {
+        let settings = Settings(
+            crosshairColor: .red,
+            opacityPercent: 60,
+            thicknessPoints: input,
+            launchAtLogin: false
+        )
+        #expect(settings.thicknessPoints == Settings.minThicknessPoints)
+    }
+
+    @Test("settings built from NaN thickness still encode")
+    func nanThicknessRemainsSaveable() throws {
+        let store = InMemoryStore()
+        let settings = Settings(
+            crosshairColor: .red,
+            opacityPercent: 60,
+            thicknessPoints: .nan,
+            launchAtLogin: false
+        )
+        try settings.save(to: store)
+        #expect(try Settings.loadStored(from: store) == settings)
+    }
+
     @Test("decoding out-of-range JSON clamps rather than throwing")
     func decodeClamps() throws {
         let json = Data("""

@@ -25,6 +25,12 @@ struct PreferencesView: View {
             LabeledContent("Toggle Hotkey", value: model.hotKeyLabel)
 
             Toggle("Launch at login", isOn: $model.launchAtLogin)
+
+            if model.saveFailed {
+                Text("Couldn't save your settings — changes apply now but will be lost when Crosshair quits.")
+                    .font(.callout)
+                    .foregroundStyle(.red)
+            }
         }
         .padding(20)
         .frame(width: 320)
