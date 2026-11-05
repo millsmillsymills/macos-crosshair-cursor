@@ -2,4 +2,7 @@
 *.app/
 .DS_Store
 *.xcodeproj
-.claude/
+.claude/*
+!.claude/debrief/
+.claude/debrief/*
+!.claude/debrief/LESSONS.md
