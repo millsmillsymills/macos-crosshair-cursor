@@ -64,7 +64,7 @@ final class SettingsModel: ObservableObject {
     private func makeSettings() -> Settings {
         Settings(
             crosshairColor: RGBAColor(color),
-            opacityPercent: Int(opacityPercent.rounded()),
+            opacityPercent: Settings.roundedOpacityPercent(opacityPercent),
             thicknessPoints: thicknessPoints,
             launchAtLogin: launchAtLogin
         )

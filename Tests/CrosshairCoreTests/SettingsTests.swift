@@ -65,6 +65,25 @@ struct SettingsTests {
                          thicknessPoints: 4.5, launchAtLogin: false).thicknessPoints == 4.5)
     }
 
+    @Test("editable opacity clamps before integer conversion", arguments: [
+        (Double.nan, 0), (Double.infinity, 100), (-Double.infinity, 0),
+        (Double.greatestFiniteMagnitude, 100), (-Double.greatestFiniteMagnitude, 0),
+        (-1.0, 0), (0.0, 0), (0.49, 0), (0.5, 1), (59.5, 60),
+        (99.49, 99), (99.5, 100), (100.0, 100), (101.0, 100),
+    ])
+    func editableOpacityConversion(input: Double, expected: Int) throws {
+        let settings = Settings(
+            crosshairColor: .red,
+            opacityPercent: Settings.roundedOpacityPercent(input),
+            thicknessPoints: 1,
+            launchAtLogin: false
+        )
+        #expect(settings.opacityPercent == expected)
+        let store = InMemoryStore()
+        try settings.save(to: store)
+        #expect(try Settings.loadStored(from: store) == settings)
+    }
+
     @Test("non-finite thickness clamps to the minimum", arguments: [
         Double.nan, .infinity, -.infinity,
     ])

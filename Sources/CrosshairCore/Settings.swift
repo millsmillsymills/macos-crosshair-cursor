@@ -77,6 +77,13 @@ public struct Settings: Codable, Equatable, Sendable {
         min(max(value, 0), 100)
     }
 
+    /// Converts editable opacity safely before the floating-point-to-integer
+    /// boundary. NaN and negative infinity become 0; positive infinity becomes 100.
+    public static func roundedOpacityPercent(_ value: Double) -> Int {
+        guard value.isFinite else { return value == .infinity ? 100 : 0 }
+        return Int(min(max(value, 0), 100).rounded())
+    }
+
     private static func clampThickness(_ value: Double) -> Double {
         // max(NaN, 1) returns NaN, and JSONEncoder rejects non-finite Doubles,
         // so a non-finite value here would make Settings permanently unsaveable.
